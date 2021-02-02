@@ -4,6 +4,7 @@ const authorText = document.getElementById('author');
 const twitterBtn = document.getElementById('twitter');
 const newQuoteBtn = document.getElementById('new-quote');
 const loader = document.getElementById('loader');
+const errorMsgContainer = document.getElementById('error-message-container');
 
 const errorLimit = 5;
 let errorCount = 0;
@@ -12,6 +13,7 @@ let errorCount = 0;
 function showLoadingSpinner() {
     loader.hidden = false;
     quoteContainer.hidden = true;
+    errorMsgContainer.hidden = true;
 }
 
 // Hide Loading Spinner
@@ -26,6 +28,7 @@ async function getQuote() {
     showLoadingSpinner();
     const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
     const apiUrl = 'http://api.forismatic.com/api/1.0/?method=getQuote&lang=en&format=json';
+
     try {
         const response = await fetch(proxyUrl + apiUrl);
         const data = await response.json();
@@ -44,17 +47,16 @@ async function getQuote() {
         quoteText.innerText = data.quoteText;
         // Stop Loader
         removeLoadingSpinner();
-
+        
     } catch (error) {
         if (errorCount < errorLimit) {
             errorCount++;
             getQuote();
         } else {
-            removeLoadingSpinner();
-            twitterBtn.hidden = true;
-            newQuoteBtn.hidden = true;
-            quoteText.innerText = 'Error Fatal!';
-            console.log('Error Fatal!');
+            loader.hidden = true;
+            quoteContainer.hidden = true;
+            errorMsgContainer.hidden = false;
+            
         }
     }
 }
